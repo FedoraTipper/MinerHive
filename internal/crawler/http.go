@@ -8,9 +8,10 @@ import (
 const (
 	authorisationHeader = "Authorization"
 
-	StatsURI = "/cgi-bin/stats.cgi"
-	PoolsURI = "/cgi-bin/pools.cgi"
-	HomeURI  = "/"
+	StatsURI      = "/cgi-bin/stats.cgi"
+	PoolsURI      = "/cgi-bin/pools.cgi"
+	SystemInfoURI = "/cgi-bin/summary.cgi"
+	HomeURI       = "/"
 )
 
 type HTTPClient struct{}
@@ -57,9 +58,7 @@ func MakeRequest(method, url, authorisationDigestValue string) (*http.Response, 
 	}
 
 	if len(authorisationDigestValue) > 0 {
-		req.Header = http.Header{
-			authorisationHeader: []string{authorisationDigestValue},
-		}
+		req.Header.Set(authorisationHeader, authorisationDigestValue)
 	}
 
 	resp, err := client.Do(req)

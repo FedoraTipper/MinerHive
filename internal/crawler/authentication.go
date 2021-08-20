@@ -42,7 +42,7 @@ type AuthorisationHeaderValues struct {
 }
 
 func ExtractWwwAuthenticateHeader(header http.Header) AuthorisationHeaderValues {
-	headerValue := header[authenticateHeaderKey][0]
+	headerValue := header.Get(authenticateHeaderKey)
 	nonce := filterNonceValue(headerValue)
 	realm := filterRealm(headerValue)
 	qop := filterQOP(headerValue)
