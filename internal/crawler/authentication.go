@@ -3,6 +3,7 @@ package crawler
 import (
 	"errors"
 	"fmt"
+	"github.com/FedoraTipper/AntHive/internal/constants"
 	"github.com/FedoraTipper/AntHive/pkg/hash"
 	"math/rand"
 	"net/http"
@@ -80,7 +81,7 @@ func regexFind(regex, header string, quoteClean bool) string {
 	return value
 }
 
-func (a *Authenticator) GenerateAuthorizationHeader(uri, httpMethod, realm, nonce, nonceCount, cnonce, qop, username, password string) (string, error) {
+func (a *Authenticator) GenerateAuthorizationHeader(uri constants.S19URI, httpMethod, realm, nonce, nonceCount, cnonce, qop, username, password string) (string, error) {
 	A1 := a.generateA1(username, realm, password)
 	A2, err := a.generateA2(httpMethod, uri, qop)
 
@@ -106,7 +107,7 @@ func (a *Authenticator) generateA1(username, realm, password string) string {
 	return fmt.Sprintf("%x", a.hasher.Hash(data))
 }
 
-func (a *Authenticator) generateA2(httpMethod, uri, qop string) (string, error) {
+func (a *Authenticator) generateA2(httpMethod string, uri constants.S19URI, qop string) (string, error) {
 	var data string
 
 	switch qop {

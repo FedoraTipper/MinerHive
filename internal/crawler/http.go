@@ -2,22 +2,18 @@ package crawler
 
 import (
 	"fmt"
+	"github.com/FedoraTipper/AntHive/internal/constants"
 	"net/http"
 )
 
 const (
 	authorisationHeader = "Authorization"
-
-	StatsURI      = "/cgi-bin/stats.cgi"
-	PoolsURI      = "/cgi-bin/pools.cgi"
-	SystemInfoURI = "/cgi-bin/summary.cgi"
-	HomeURI       = "/"
 )
 
 type HTTPClient struct{}
 
 func GetNewWwwAuthorisationHeader(baseUrl string) (http.Header, error) {
-	fullURL := fmt.Sprintf("%s%s", baseUrl, HomeURI)
+	fullURL := fmt.Sprintf("%s%s", baseUrl, constants.HomeURI)
 	resp, err := MakeRequest(http.MethodGet, fullURL, "")
 
 	if err != nil {
@@ -36,14 +32,14 @@ func GetStats(baseUrl, username, password, nonceCount, hashMethod, salt string, 
 		return nil, err
 	}
 
-	authorizationHeader, err := authenticator.GenerateAuthorizationHeader(StatsURI, http.MethodGet, authorisationHeaderValues.Realm, authorisationHeaderValues.Nonce,
+	authorizationHeader, err := authenticator.GenerateAuthorizationHeader(constants.StatsURI, http.MethodGet, authorisationHeaderValues.Realm, authorisationHeaderValues.Nonce,
 		nonceCount, cnonce, authorisationHeaderValues.Qop, username, password)
 
 	if err != nil {
 		return nil, err
 	}
 
-	fullURL := fmt.Sprintf("%s%s", baseUrl, StatsURI)
+	fullURL := fmt.Sprintf("%s%s", baseUrl, constants.StatsURI)
 
 	return MakeRequest(http.MethodGet, fullURL, authorizationHeader)
 }

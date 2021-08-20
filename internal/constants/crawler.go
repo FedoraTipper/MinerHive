@@ -1,6 +1,6 @@
 package constants
 
-type MinerStats struct {
+type S19MinerStats struct {
 	Status struct {
 		StatusCode string `json:"STATUS"`
 		When       int    `json:"when"`
