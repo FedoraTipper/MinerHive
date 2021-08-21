@@ -1,7 +1,16 @@
 package constants
 
+type MinerSeries string
+
 const (
-	X19_MinerSeries = "X19"
+	X19 MinerSeries = "X19"
+)
+
+// TODO Move this somewhere else
+var (
+	SupporteredMiners = map[MinerSeries]struct{}{
+		X19: {},
+	}
 )
 
 type MinerStatus int
