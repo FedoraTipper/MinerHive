@@ -14,9 +14,11 @@ type Stasher struct {
 func (s *Stasher) init() {
 }
 
-func (s *Stasher) NewRedisClient(redisEndpoint, username, password string, selectedDB int) error {
+func (s *Stasher) NewRedisClient(host string, port uint, username, password string, selectedDB int) error {
+	url := fmt.Sprintf("%s:%d", host, port)
+
 	client := redis.NewClient(&redis.Options{
-		Addr:     redisEndpoint,
+		Addr:     url,
 		Username: username,
 		Password: password,
 		DB:       selectedDB,
@@ -39,10 +41,10 @@ func (s *Stasher) redisTestConnection(client *redis.Client) error {
 	return client.Set(ctx, "anthive_conn_test", "test", 5).Err()
 }
 
-func (s *Stasher) StashInterface(key string, miner *models.Miner) error {
+func (s *Stasher) StashInterface(miner *models.Miner) error {
 	ctx := context.Background()
 
-	err := s.redisClient.Set(ctx, key, miner, -1).Err()
+	err := s.redisClient.Set(ctx, miner.MinerName, miner, -1).Err()
 
 	if err != nil {
 		return err

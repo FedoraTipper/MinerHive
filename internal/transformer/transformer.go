@@ -7,11 +7,11 @@ import (
 	"github.com/FedoraTipper/AntHive/internal/models"
 )
 
-type Transformer interface {
-	ConvertStatsPayloadToMiner(string, string, interface{}) (*models.Miner, error)
+type ITransformer interface {
+	ConvertStatsPayloadToMiner(friendlyMinerName string, crawlerName string, IMinerStats interface{}) (*models.Miner, error)
 }
 
-func GetTransformer(model constants.MinerSeries) (Transformer, error) {
+func GetTransformer(model constants.MinerSeries) (ITransformer, error) {
 	switch model {
 	case constants.X19:
 		return &S19Transformer{}, nil

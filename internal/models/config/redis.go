@@ -4,7 +4,7 @@ import "errors"
 
 type RedisConfig struct {
 	Host             string
-	Port             string
+	Port             uint
 	Username         string
 	Password         string
 	SelectedDatabase int
@@ -17,8 +17,8 @@ func (r *RedisConfig) Validate() []error {
 		errs = append(errs, errors.New("Value for Host is empty"))
 	}
 
-	if len(r.Port) == 0 {
-		errs = append(errs, errors.New("Value for Port is empty"))
+	if r.Port == 0 {
+		errs = append(errs, errors.New("Value for Port is unassigned"))
 	}
 
 	return errs

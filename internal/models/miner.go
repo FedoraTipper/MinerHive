@@ -21,16 +21,17 @@ type Fan struct {
 }
 
 type Hashboard struct {
-	BoardNumber     int
-	NoOfChips       int
-	Errors          int
-	ChipFrequency   int
-	CurrentHashRate float64
-	RatedHashRate   float64
-	PICTemperature  []int
-	PCBTemperature  []int
-	ChipTemperature []int
-	SerialNumber    string
+	BoardNumber             int
+	NoOfChips               int
+	MalfunctioningChipsList []int
+	HWErrors                int
+	ChipFrequency           int
+	CurrentHashRate         float64
+	RatedHashRate           float64
+	PICTemperature          []int
+	PCBTemperature          []int
+	ChipTemperature         []int
+	SerialNumber            string
 }
 
 func (m *Miner) MarshalBinary() ([]byte, error) {

@@ -42,7 +42,7 @@ func (c *CrawlerConfig) Validate() []error {
 type MinerConfig struct {
 	MinerName string
 	Host      string
-	Port      int
+	Port      uint
 	Username  string
 	Password  string
 	Model     constants.MinerSeries
@@ -61,6 +61,10 @@ func (m *MinerConfig) Validate() []error {
 		errs = append(errs, errors.New(fmt.Sprintf("Duplicate MinerName %s found. Each miner should have an unique MinerName.", m.MinerName)))
 	} else {
 		minerNames[m.MinerName] = 1
+	}
+
+	if m.Port == 0 {
+		errs = append(errs, errors.New("Value for Port is unassigned"))
 	}
 
 	if len(m.Model) == 0 {
