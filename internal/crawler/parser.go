@@ -3,7 +3,7 @@ package crawler
 import "encoding/json"
 import "github.com/FedoraTipper/AntHive/internal/constants"
 
-func ParseStats(data []byte) (*constants.S19MinerStats, error) {
+func parseS19Stats(data []byte) (*constants.S19MinerStats, error) {
 	var statsPayload constants.S19MinerStats
 
 	err := json.Unmarshal(data, &statsPayload)

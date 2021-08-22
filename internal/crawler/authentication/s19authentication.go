@@ -1,4 +1,4 @@
-package crawler
+package authentication
 
 import (
 	"errors"
@@ -21,34 +21,37 @@ const (
 	qopAuthConf = "auth-conf"
 )
 
-type Authenticator struct {
+type S19Authenticator struct {
 	hasher                    hash.Hasher
 	salt                      string
-	authorisationHeaderValues AuthorisationHeaderValues
+	authorisationHeaderValues S19AuthorisationHeaderValues
 }
 
-func NewAuthenticator(hashMethod, salt string) *Authenticator {
+func NewS19Authenticator(hashMethod, salt string, wwwAuthorisationHeader http.Header) *S19Authenticator {
 	hasher := hash.GetHasher(hashMethod)
 
-	return &Authenticator{
-		hasher: hasher,
-		salt:   salt,
+	authorisationHeaderValues := ExtractWwwAuthenticateHeader(wwwAuthorisationHeader)
+
+	return &S19Authenticator{
+		hasher:                    hasher,
+		salt:                      salt,
+		authorisationHeaderValues: authorisationHeaderValues,
 	}
 }
 
-type AuthorisationHeaderValues struct {
+type S19AuthorisationHeaderValues struct {
 	Qop   string
 	Nonce string
 	Realm string
 }
 
-func ExtractWwwAuthenticateHeader(header http.Header) AuthorisationHeaderValues {
+func ExtractWwwAuthenticateHeader(header http.Header) S19AuthorisationHeaderValues {
 	headerValue := header.Get(authenticateHeaderKey)
 	nonce := filterNonceValue(headerValue)
 	realm := filterRealm(headerValue)
 	qop := filterQOP(headerValue)
 
-	return AuthorisationHeaderValues{
+	return S19AuthorisationHeaderValues{
 		Qop:   qop,
 		Realm: realm,
 		Nonce: nonce,
@@ -81,8 +84,18 @@ func regexFind(regex, header string, quoteClean bool) string {
 	return value
 }
 
-func (a *Authenticator) GenerateAuthorizationHeader(uri constants.S19URI, httpMethod, realm, nonce, nonceCount, cnonce, qop, username, password string) (string, error) {
-	A1 := a.generateA1(username, realm, password)
+func (a *S19Authenticator) GenerateAuthorizationHeader(uri constants.S19URI, httpMethod, nonceCount, username, password string) (string, error) {
+	cnonce, err := a.GenerateRandomNonce()
+
+	if err != nil {
+		return "", err
+	}
+
+	qop := a.authorisationHeaderValues.Qop
+	realm := a.authorisationHeaderValues.Realm
+	nonce := a.authorisationHeaderValues.Nonce
+
+	A1 := a.generateA1(username, password, realm)
 	A2, err := a.generateA2(httpMethod, uri, qop)
 
 	if err != nil {
@@ -97,17 +110,17 @@ func (a *Authenticator) GenerateAuthorizationHeader(uri constants.S19URI, httpMe
 // FOLLOW RFC7616 SPEC
 // https://datatracker.ietf.org/doc/html/rfc7616#section-2.1
 
-func (a *Authenticator) generateResponse(A1, A2, nonce, nonceCount, cnonce, qop string) string {
+func (a *S19Authenticator) generateResponse(A1, A2, nonce, nonceCount, cnonce, qop string) string {
 	data := []byte(fmt.Sprintf("%s:%s:%s:%s:%s:%s", A1, nonce, nonceCount, cnonce, qop, A2))
 	return fmt.Sprintf("%x", a.hasher.Hash(data))
 }
 
-func (a *Authenticator) generateA1(username, realm, password string) string {
+func (a *S19Authenticator) generateA1(username, password, realm string) string {
 	data := []byte(fmt.Sprintf("%s:%s:%s", username, realm, password))
 	return fmt.Sprintf("%x", a.hasher.Hash(data))
 }
 
-func (a *Authenticator) generateA2(httpMethod string, uri constants.S19URI, qop string) (string, error) {
+func (a *S19Authenticator) generateA2(httpMethod string, uri constants.S19URI, qop string) (string, error) {
 	var data string
 
 	switch qop {
@@ -123,7 +136,7 @@ func (a *Authenticator) generateA2(httpMethod string, uri constants.S19URI, qop 
 	return fmt.Sprintf("%x", a.hasher.Hash([]byte(data))), nil
 }
 
-func (a *Authenticator) GenerateRandomNonce() (string, error) {
+func (a *S19Authenticator) GenerateRandomNonce() (string, error) {
 	rand.Seed(time.Now().Unix())
 
 	var data [][]byte
