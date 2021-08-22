@@ -21,5 +21,6 @@ const (
 )
 
 const (
-	S19_OKStatus string = "S"
+	S19_OKStatus          string = "S"
+	Antminer_OKChipStatus string = "o"
 )

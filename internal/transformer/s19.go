@@ -31,17 +31,26 @@ func (*S19Transformer) ConvertStatsPayloadToMiner(friendlyMinerName, crawlerId s
 	}
 
 	for _, hb := range stats.Chain {
+		var malfunctioningChipsList []int
+
+		for i, chipStatus := range hb.Asic {
+			if string(chipStatus) != constants.Antminer_OKChipStatus {
+				malfunctioningChipsList = append(malfunctioningChipsList, i)
+			}
+		}
+
 		hashboards = append(hashboards, models.Hashboard{
-			BoardNumber:     hb.Index,
-			NoOfChips:       hb.AsicNum,
-			Errors:          hb.Hw,
-			ChipFrequency:   hb.FreqAvg,
-			CurrentHashRate: hb.RateReal,
-			RatedHashRate:   hb.RateIdeal,
-			PICTemperature:  hb.TempPic,
-			PCBTemperature:  hb.TempPcb,
-			ChipTemperature: hb.TempChip,
-			SerialNumber:    hb.Sn,
+			BoardNumber:             hb.Index,
+			NoOfChips:               hb.AsicNum,
+			MalfunctioningChipsList: malfunctioningChipsList,
+			HWErrors:                hb.Hw,
+			ChipFrequency:           hb.FreqAvg,
+			CurrentHashRate:         hb.RateReal,
+			RatedHashRate:           hb.RateIdeal,
+			PICTemperature:          hb.TempPic,
+			PCBTemperature:          hb.TempPcb,
+			ChipTemperature:         hb.TempChip,
+			SerialNumber:            hb.Sn,
 		})
 	}
 
