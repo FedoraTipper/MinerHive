@@ -11,9 +11,6 @@ type Stasher struct {
 	redisClient *redis.Client
 }
 
-func (s *Stasher) init() {
-}
-
 func (s *Stasher) NewRedisClient(host string, port uint, username, password string, selectedDB int) error {
 	url := fmt.Sprintf("%s:%d", host, port)
 

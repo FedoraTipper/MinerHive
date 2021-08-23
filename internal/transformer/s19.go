@@ -34,7 +34,7 @@ func (*S19Transformer) ConvertStatsPayloadToMiner(friendlyMinerName, crawlerId s
 		var malfunctioningChipsList []int
 
 		for i, chipStatus := range hb.Asic {
-			if string(chipStatus) != constants.Antminer_OKChipStatus {
+			if string(chipStatus) != " " && string(chipStatus) != constants.Antminer_OKChipStatus {
 				malfunctioningChipsList = append(malfunctioningChipsList, i+1)
 			}
 		}
