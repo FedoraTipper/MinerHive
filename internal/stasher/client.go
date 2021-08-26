@@ -3,6 +3,7 @@ package stasher
 import (
 	"context"
 	"fmt"
+
 	"github.com/FedoraTipper/AntHive/internal/models"
 	"github.com/go-redis/redis/v8"
 )
@@ -55,9 +56,9 @@ func (s *Stasher) GetInterface(key string) (string, error) {
 
 	i, err := s.redisClient.Get(ctx, key).Result()
 
-	fmt.Println(i)
-
-	if err != nil {
+	if err == redis.Nil {
+		err = nil
+	} else if err != nil {
 		return "", err
 	}
 

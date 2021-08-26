@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"fmt"
+
 	"github.com/FedoraTipper/AntHive/internal/constants"
 )
 
@@ -43,8 +44,6 @@ type MinerConfig struct {
 	MinerName string
 	Host      string
 	Port      uint
-	Username  string
-	Password  string
 	Model     constants.MinerSeries
 }
 

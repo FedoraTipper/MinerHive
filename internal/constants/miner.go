@@ -13,6 +13,11 @@ var (
 	}
 )
 
+const (
+	CGMiner_STATS           = "STATS"
+	CGMINER_RESPONSE_STATUS = ""
+)
+
 type MinerStatus int
 
 const (

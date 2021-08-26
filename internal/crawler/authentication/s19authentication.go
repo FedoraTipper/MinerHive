@@ -1,15 +1,18 @@
 package authentication
 
+// DEPRECATED. REPLACED WITH RPC CLIENT
+
 import (
 	"errors"
 	"fmt"
-	"github.com/FedoraTipper/AntHive/internal/constants"
-	"github.com/FedoraTipper/AntHive/pkg/hash"
 	"math/rand"
 	"net/http"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/FedoraTipper/AntHive/internal/constants"
+	"github.com/FedoraTipper/AntHive/pkg/hash"
 )
 
 const (

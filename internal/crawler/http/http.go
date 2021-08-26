@@ -1,11 +1,14 @@
 package http
 
+// DEPRECATED. REPLACED WITH RPC CLIENT
+
 import (
 	"errors"
 	"fmt"
-	"github.com/FedoraTipper/AntHive/internal/constants"
 	"io"
 	"net/http"
+
+	"github.com/FedoraTipper/AntHive/internal/constants"
 )
 
 const (

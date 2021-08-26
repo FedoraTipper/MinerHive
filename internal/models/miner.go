@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+
 	"github.com/FedoraTipper/AntHive/internal/constants"
 )
 
@@ -11,6 +12,8 @@ type Miner struct {
 	MinerModel   string
 	Status       constants.MinerStatus
 	MinerVersion string
+	Uptime       int
+	HashRateUnit string
 	Fans         []Fan
 	HashBoards   []Hashboard
 }

@@ -2,16 +2,14 @@ package crawler
 
 import (
 	"fmt"
-	"github.com/FedoraTipper/AntHive/internal/constants"
-	http2 "github.com/FedoraTipper/AntHive/internal/crawler/http"
+	"log"
+	"time"
+
+	"github.com/FedoraTipper/AntHive/internal/crawler/rpc"
 	"github.com/FedoraTipper/AntHive/internal/models/config"
 	"github.com/FedoraTipper/AntHive/internal/stasher"
 	"github.com/FedoraTipper/AntHive/internal/transformer"
-	"github.com/FedoraTipper/AntHive/pkg/http"
 	"github.com/go-co-op/gocron"
-	"io/ioutil"
-	"log"
-	"time"
 )
 
 type CrawlerRunner struct {
@@ -34,7 +32,7 @@ func (cr *CrawlerRunner) StartWork() {
 	cr.stasher = stash
 
 	for _, miner := range cr.CrawlerConfig.Miners {
-		job, err := s.Every(fmt.Sprintf("%ds", cr.CrawlerConfig.CrawlInterval)).Do(cr.crawl, miner)
+		job, err := s.Every(fmt.Sprintf("%ds", cr.CrawlerConfig.CrawlInterval)).Do(cr.collect, miner)
 
 		if err != nil {
 			log.Println(err)
@@ -47,43 +45,30 @@ func (cr *CrawlerRunner) StartWork() {
 	s.StartBlocking()
 }
 
-func (cr *CrawlerRunner) crawl(miner config.MinerConfig) {
+func (cr *CrawlerRunner) collect(miner config.MinerConfig) {
 	fmt.Printf("Starting job for miner %s\n", miner.MinerName)
-	url := http.FormURL(miner.Host, miner.Port)
+	//url := http.FormURL(miner.Host, miner.Port)
+	url := fmt.Sprintf("%s:%d", miner.Host, miner.Port)
 
-	httpClient, err := http2.GetHTTPClient(miner.Model)
-
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	statsResp, err := httpClient.GetStatsResponse(url, miner.Username, miner.Password, cr.CrawlerConfig.Salt)
+	rpcClient, err := rpc.GetRPCClient(miner.Model)
 
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	body, err := ioutil.ReadAll(statsResp.Body)
+	statsBytes, err := rpcClient.GetStats(url)
 
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	statsResp.Body.Close()
-
-	statsPayload, err := parseS19Stats(body)
+	t, err := transformer.GetTransformer(miner.Model)
 
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	t, err := transformer.GetTransformer(constants.X19)
-
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	minerObj, err := t.ConvertStatsPayloadToMiner(miner.MinerName, cr.CrawlerConfig.CrawlerName, statsPayload)
+	minerObj, err := t.ConvertStatsPayloadToMiner(miner.MinerName, cr.CrawlerConfig.CrawlerName, statsBytes)
 
 	if err != nil {
 		log.Fatalln(err)

@@ -1,13 +1,16 @@
 package http
 
+// DEPRECATED. REPLACED WITH RPC CLIENT
+
 import (
 	"fmt"
+	"log"
+	"net/http"
+
 	"github.com/FedoraTipper/AntHive/internal/constants"
 	"github.com/FedoraTipper/AntHive/internal/crawler/authentication"
 	"github.com/FedoraTipper/AntHive/pkg/hash"
 	"github.com/FedoraTipper/AntHive/pkg/hex"
-	"log"
-	"net/http"
 )
 
 type S19HTTPClient struct{}

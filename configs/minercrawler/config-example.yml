@@ -3,15 +3,11 @@ CrawlInterval: 1                    # Update every 1s (Default: 1)
 Miners:                             # List of Miners
   - MinerName: S19Miner1            # Unique name of miner
     Host: 192.168.1.2               # IP/Address of the miner
-    Port: 80                        # Port of the miner's web interface
-    Username: root                  # Login username of the web interface
-    Password: password              # Login password of the web interface
+    Port: 4028                      # Port of the miner's CGMiner RPC API
     Model:  X19                     # Miner model type. refer to README.md for supported list
   - MinerName: S19Miner2
     Host: someminer1.example.com
-    Port: 443
-    Username: root
-    Password: password
+    Port: 4028
     Model:  X19
 Redis:
   Host: localhost                   # IP/Address of Redis DB
