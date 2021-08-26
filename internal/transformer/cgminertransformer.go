@@ -4,9 +4,10 @@ import (
 	"fmt"
 
 	"github.com/FedoraTipper/AntHive/internal/constants"
-	"github.com/FedoraTipper/AntHive/internal/models"
+	pkgConstants "github.com/FedoraTipper/AntHive/pkg/constants"
 	"github.com/FedoraTipper/AntHive/pkg/converter"
 	gabsWrapper "github.com/FedoraTipper/AntHive/pkg/gabs"
+	"github.com/FedoraTipper/AntHive/pkg/models"
 	"github.com/Jeffail/gabs/v2"
 )
 
@@ -53,6 +54,7 @@ func (*CGMinerTransformer) ConvertStatsPayloadToMiner(friendlyMinerName, crawler
 	return &models.Miner{
 		MinerName:    friendlyMinerName,
 		CrawlerName:  crawlerId,
+		Status:       pkgConstants.MinerOK,
 		MinerModel:   minerModel,
 		MinerVersion: minerVersion,
 		HashRateUnit: wrapper.GetString(rateUnitField),

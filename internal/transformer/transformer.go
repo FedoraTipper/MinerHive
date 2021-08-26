@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/FedoraTipper/AntHive/internal/constants"
-	"github.com/FedoraTipper/AntHive/internal/models"
+	"github.com/FedoraTipper/AntHive/pkg/models"
 )
 
 type ITransformer interface {

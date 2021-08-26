@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/FedoraTipper/AntHive/internal/models"
+	"github.com/FedoraTipper/AntHive/pkg/models"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -30,13 +30,7 @@ func (s *Stasher) NewRedisClient(host string, port uint, username, password stri
 func (s *Stasher) redisTestConnection(client *redis.Client) error {
 	ctx := context.Background()
 
-	err := client.Ping(ctx).Err()
-
-	if err != nil {
-		return err
-	}
-
-	return client.Set(ctx, "anthive_conn_test", "test", 5).Err()
+	return client.Ping(ctx).Err()
 }
 
 func (s *Stasher) StashInterface(miner *models.Miner) error {

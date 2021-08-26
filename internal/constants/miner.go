@@ -8,7 +8,7 @@ const (
 
 // TODO Move this somewhere else
 var (
-	SupporteredMiners = map[MinerSeries]struct{}{
+	SupportedMiners = map[MinerSeries]struct{}{
 		X19: {},
 	}
 )
@@ -16,13 +16,6 @@ var (
 const (
 	CGMiner_STATS           = "STATS"
 	CGMINER_RESPONSE_STATUS = ""
-)
-
-type MinerStatus int
-
-const (
-	MinerOK MinerStatus = iota + 1
-	MinerStopped
 )
 
 const (

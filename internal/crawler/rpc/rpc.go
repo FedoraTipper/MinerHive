@@ -24,7 +24,7 @@ type Request struct {
 func GetRPCClient(model constants.MinerSeries) (IRPCCLient, error) {
 	switch model {
 	case constants.X19:
-		return &S19RPCClient{}, nil
+		return &CGMinerRPCClient{}, nil
 	default:
 		return nil, errors.New(fmt.Sprintf("Unknown model: %s", model))
 	}

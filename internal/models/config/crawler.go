@@ -68,7 +68,7 @@ func (m *MinerConfig) Validate() []error {
 
 	if len(m.Model) == 0 {
 		errs = append(errs, errors.New("Value for Model is empty"))
-	} else if _, exists := constants.SupporteredMiners[m.Model]; !exists {
+	} else if _, exists := constants.SupportedMiners[m.Model]; !exists {
 		errs = append(errs, errors.New(fmt.Sprintf("Model %v is not supported", m.Model)))
 	}
 
