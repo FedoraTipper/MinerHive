@@ -7,13 +7,14 @@ import (
 	pkgConstants "github.com/FedoraTipper/AntHive/pkg/constants"
 	"github.com/FedoraTipper/AntHive/pkg/converter"
 	gabsWrapper "github.com/FedoraTipper/AntHive/pkg/gabs"
+	"github.com/FedoraTipper/AntHive/pkg/hex"
 	"github.com/FedoraTipper/AntHive/pkg/models"
 	"github.com/Jeffail/gabs/v2"
 )
 
 const (
 	hashboardCountField = "miner_count"
-	elapsedField        = "elapsed"
+	elapsedField        = "Elapsed"
 	rateUnitField       = "rate_unit"
 	fanNumField         = "fan_num"
 	fanSpeedField       = "fan%d"
@@ -61,6 +62,7 @@ func (*CGMinerTransformer) ConvertStatsPayloadToMiner(friendlyMinerName, crawler
 		Uptime:       wrapper.GetInt(elapsedField),
 		Fans:         fans,
 		HashBoards:   hashboards,
+		Nonce:        hex.GenerateHexString(8),
 	}, nil
 }
 

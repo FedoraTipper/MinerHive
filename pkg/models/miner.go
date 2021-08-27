@@ -16,6 +16,7 @@ type Miner struct {
 	HashRateUnit string
 	Fans         []Fan
 	HashBoards   []Hashboard
+	Nonce        string // Generated Nonce to avoid consuming the same obj in redis
 }
 
 type Fan struct {
