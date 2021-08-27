@@ -86,20 +86,23 @@ func main() {
 
 	var totalHashRate float64
 
-	chipTempPoints := influxdb2.NewPointWithMeasurement("chip-temperature").
-		AddTag("miner", minerName)
+	for _, board := range miner.HashBoards {
+		pcbTempPoints := influxdb2.NewPointWithMeasurement("pcb-temperature").
+			AddTag("miner", minerName).
+			AddTag("board", fmt.Sprintf("%d", board.BoardNumber)).
+			AddField("inlet", math.Max(float64(board.ChipTemperature[0]), float64(board.ChipTemperature[1]))).
+			AddField("outlet", math.Max(float64(board.PCBTemperature[2]), float64(board.PCBTemperature[3])))
 
-	pcbTempPoints := influxdb2.NewPointWithMeasurement("pcb-temperature").
-		AddTag("miner", minerName)
+		chipTempPoints := influxdb2.NewPointWithMeasurement("chip-temperature").
+			AddTag("miner", minerName).
+			AddTag("board", fmt.Sprintf("%d", board.BoardNumber)).
+			AddField("inlet", math.Max(float64(board.ChipTemperature[0]), float64(board.ChipTemperature[1]))).
+			AddField("outlet", math.Max(float64(board.ChipTemperature[2]), float64(board.ChipTemperature[3])))
 
-	for _, boards := range miner.HashBoards {
-		chipTempPoints.AddField("inlet", math.Max(float64(boards.ChipTemperature[0]), float64(boards.ChipTemperature[1])))
-		chipTempPoints.AddField("outlet", math.Max(float64(boards.ChipTemperature[2]), float64(boards.ChipTemperature[3])))
+		writeAPI.WritePoint(chipTempPoints)
+		writeAPI.WritePoint(pcbTempPoints)
 
-		pcbTempPoints.AddField("inlet", math.Max(float64(boards.ChipTemperature[0]), float64(boards.ChipTemperature[1])))
-		pcbTempPoints.AddField("outlet", math.Max(float64(boards.PCBTemperature[2]), float64(boards.PCBTemperature[3])))
-
-		totalHashRate += boards.CurrentHashRate
+		totalHashRate += board.CurrentHashRate
 	}
 
 	hashratePoint := influxdb2.NewPointWithMeasurement("hashrate").AddTag("miner", minerName).AddField("total", totalHashRate)
@@ -107,8 +110,6 @@ func main() {
 
 	writeAPI.WritePoint(hashratePoint)
 	writeAPI.WritePoint(uptimePoint)
-	writeAPI.WritePoint(chipTempPoints)
-	writeAPI.WritePoint(pcbTempPoints)
 
 	// Flush writes
 	writeAPI.Flush()
