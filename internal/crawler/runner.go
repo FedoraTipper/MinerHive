@@ -6,10 +6,12 @@ import (
 	"time"
 
 	"github.com/FedoraTipper/AntHive/internal/crawler/rpc"
+	"github.com/FedoraTipper/AntHive/internal/logger"
 	"github.com/FedoraTipper/AntHive/internal/models/config"
 	"github.com/FedoraTipper/AntHive/internal/stasher"
 	"github.com/FedoraTipper/AntHive/internal/transformer"
 	"github.com/go-co-op/gocron"
+	"go.uber.org/zap"
 )
 
 type CrawlerRunner struct {
@@ -18,6 +20,8 @@ type CrawlerRunner struct {
 }
 
 func (cr *CrawlerRunner) StartWork() {
+	cr.initLogger()
+
 	s := gocron.NewScheduler(time.UTC)
 
 	stash := &stasher.Stasher{}
@@ -26,8 +30,10 @@ func (cr *CrawlerRunner) StartWork() {
 	err := stash.NewRedisClient(redisConfig.Host, redisConfig.Port, redisConfig.Username, redisConfig.Password, redisConfig.SelectedDatabase)
 
 	if err != nil {
-		log.Fatalln(err)
+		zap.S().Fatalw("Error creating new Redis client", "Error", err)
 	}
+
+	zap.S().Infof("Redis client established to %s:%d", redisConfig.Host, redisConfig.Port)
 
 	cr.stasher = stash
 
@@ -35,7 +41,7 @@ func (cr *CrawlerRunner) StartWork() {
 		job, err := s.Every(fmt.Sprintf("%ds", cr.CrawlerConfig.CrawlInterval)).Do(cr.collect, miner)
 
 		if err != nil {
-			log.Println(err)
+			zap.S().Errorw("Error completing job for miner", "Miner", miner.MinerName, "Error", err)
 			continue
 		}
 		// Set Scheduler in a singleton mode to avoid job collision
@@ -45,21 +51,29 @@ func (cr *CrawlerRunner) StartWork() {
 	s.StartBlocking()
 }
 
+func (cr *CrawlerRunner) initLogger() {
+	err := logger.InitGlobalLogger(cr.CrawlerConfig.LoggingFile, cr.CrawlerConfig.LoggingLevel)
+
+	if err != nil {
+		log.Fatalf("Unable to configure logger. Error: %v", err)
+	}
+}
+
 func (cr *CrawlerRunner) collect(miner config.MinerConfig) {
-	fmt.Printf("Starting job for miner %s\n", miner.MinerName)
-	//url := http.FormURL(miner.Host, miner.Port)
-	url := fmt.Sprintf("%s:%d", miner.Host, miner.Port)
+	zap.S().Infof("Starting new job for miner %s (%s)", miner.MinerName, miner.GetURL())
 
 	rpcClient, err := rpc.GetRPCClient(miner.Model)
 
 	if err != nil {
-		log.Fatalln(err)
+		zap.S().Errorw("Error getting RPC client for miner model", "Error", err)
+		return
 	}
 
-	statsBytes, err := rpcClient.GetStats(url)
+	statsBytes, err := rpcClient.GetStats(miner.GetURL())
 
 	if err != nil {
-		log.Fatalln(err)
+		zap.S().Errorw("Error getting stats for miner", "Miner", miner.MinerName, "Error", err)
+		return
 	}
 
 	t, err := transformer.GetTransformer(miner.Model)

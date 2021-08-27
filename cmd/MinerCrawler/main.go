@@ -1,11 +1,11 @@
 package main
 
 import (
+	"log"
+
 	"github.com/FedoraTipper/AntHive/internal/config"
 	"github.com/FedoraTipper/AntHive/internal/crawler"
 	configModels "github.com/FedoraTipper/AntHive/internal/models/config"
-	"log"
-	//"github.com/uber-go/zap"
 )
 
 var (
@@ -19,10 +19,9 @@ var (
 )
 
 var defaultConfigValues = map[string]interface{}{
-	"CrawlInterval":  1, // 1 sec
-	"LoggingEnabled": true,
-	"LoggingLevel":   "info",
-	"Salt":           "j8%mEbbkf2#PtSwxLnN4cSc&p%5SrJPviRDwGdrgx%STzW%P82s4j^e2PBtHvJ@J4%",
+	"CrawlInterval": 1, // 1 sec
+	"LoggingLevel":  "info",
+	"LoggingFile":   "",
 	"Redis": configModels.RedisConfig{
 		SelectedDatabase: 0,
 	},
@@ -39,14 +38,18 @@ func main() {
 	var crawlerConfig configModels.CrawlerConfig
 
 	if err := viper.UnmarshalExact(&crawlerConfig); err != nil {
-		log.Println("Error in config.yml")
+		log.Println("Error in parsing config.yml")
 		log.Fatalf("%v", err)
 	}
 
 	errs := crawlerConfig.Validate()
 
-	for _, err := range errs {
-		log.Printf("%v\n", err)
+	if len(errs) > 0 {
+		for _, err := range errs {
+			log.Printf("%v\n", err)
+		}
+
+		log.Fatalln("End of errors")
 	}
 
 	runner := crawler.CrawlerRunner{
@@ -54,5 +57,4 @@ func main() {
 	}
 
 	runner.StartWork()
-
 }

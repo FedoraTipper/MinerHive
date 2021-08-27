@@ -6,11 +6,11 @@ import (
 )
 
 type HiveConfig struct {
-	LoggingEnabled bool
-	LoggingLevel   string
-	Port           uint
-	Token          string
-	Redis          RedisConfig
+	LoggingLevel string
+	LoggingFile  string
+	Port         uint
+	Token        string
+	Redis        RedisConfig
 }
 
 func (h *HiveConfig) Validate() []error {

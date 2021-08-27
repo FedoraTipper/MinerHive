@@ -8,13 +8,12 @@ import (
 )
 
 type CrawlerConfig struct {
-	CrawlerName    string
-	CrawlInterval  int
-	LoggingEnabled bool
-	LoggingLevel   string
-	Salt           string
-	Miners         []MinerConfig
-	Redis          RedisConfig
+	CrawlerName   string
+	CrawlInterval int
+	LoggingLevel  string
+	LoggingFile   string
+	Miners        []MinerConfig
+	Redis         RedisConfig
 }
 
 func (c *CrawlerConfig) Validate() []error {
@@ -50,6 +49,10 @@ type MinerConfig struct {
 var (
 	minerNames = map[string]int{}
 )
+
+func (m *MinerConfig) GetURL() string {
+	return fmt.Sprintf("%s:%d", m.Host, m.Port)
+}
 
 func (m *MinerConfig) Validate() []error {
 	var errs []error
