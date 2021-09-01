@@ -38,8 +38,8 @@ func (s *Stasher) redisTestConnection(client *redis.Client) error {
 func (s *Stasher) StashInterface(miner *models.MinerStats, expiration time.Duration) error {
 	ctx := context.Background()
 
-	zap.S().Infow("Stashing miner stats in RedisDB with no expiration", "Miner", miner.MinerName)
-	err := s.redisClient.Set(ctx, miner.MinerName, miner, -1).Err()
+	zap.S().Infow("Stashing miner stats in RedisDB with expiration", "Miner", miner.MinerName, "Expiration", expiration.String())
+	err := s.redisClient.Set(ctx, miner.MinerName, miner, expiration).Err()
 
 	if err != nil {
 		return err
