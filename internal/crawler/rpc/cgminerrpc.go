@@ -1,6 +1,8 @@
 package rpc
 
-import "github.com/FedoraTipper/AntHive/internal/constants"
+import (
+	"github.com/FedoraTipper/AntHive/internal/constants"
+)
 
 type CGMinerRPCClient struct {
 }

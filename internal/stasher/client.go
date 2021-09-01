@@ -3,9 +3,11 @@ package stasher
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/FedoraTipper/AntHive/pkg/models"
 	"github.com/go-redis/redis/v8"
+	"go.uber.org/zap"
 )
 
 type Stasher struct {
@@ -33,9 +35,10 @@ func (s *Stasher) redisTestConnection(client *redis.Client) error {
 	return client.Ping(ctx).Err()
 }
 
-func (s *Stasher) StashInterface(miner *models.Miner) error {
+func (s *Stasher) StashInterface(miner *models.MinerStats, expiration time.Duration) error {
 	ctx := context.Background()
 
+	zap.S().Infow("Stashing miner stats in RedisDB with no expiration", "Miner", miner.MinerName)
 	err := s.redisClient.Set(ctx, miner.MinerName, miner, -1).Err()
 
 	if err != nil {
@@ -48,9 +51,11 @@ func (s *Stasher) StashInterface(miner *models.Miner) error {
 func (s *Stasher) GetInterface(key string) (string, error) {
 	ctx := context.Background()
 
+	zap.S().Infof("Getting miner stats with key (%s) from RedisDB", key)
 	i, err := s.redisClient.Get(ctx, key).Result()
 
 	if err == redis.Nil {
+		zap.S().Warnf("Key %s is missing from RedisDB", key)
 		err = nil
 	} else if err != nil {
 		return "", err

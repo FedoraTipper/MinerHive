@@ -3,6 +3,7 @@ package constants
 type MinerStatus int
 
 const (
-	MinerOK MinerStatus = iota + 1
-	MinerStopped
+	MinerStatusOk MinerStatus = iota + 1
+	MinerStatusStopped
+	MinerStatusUnknown
 )

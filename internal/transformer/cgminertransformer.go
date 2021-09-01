@@ -30,7 +30,7 @@ const (
 
 type CGMinerTransformer struct{}
 
-func (*CGMinerTransformer) ConvertStatsPayloadToMiner(friendlyMinerName, crawlerId string, data []byte) (*models.Miner, error) {
+func (*CGMinerTransformer) ConvertStatsPayloadToMinerStats(friendlyMinerName, crawlerId string, data []byte) (*models.MinerStats, error) {
 	jsonMap, err := gabs.ParseJSON(data)
 
 	if err != nil {
@@ -52,10 +52,10 @@ func (*CGMinerTransformer) ConvertStatsPayloadToMiner(friendlyMinerName, crawler
 		return nil, err
 	}
 
-	return &models.Miner{
+	return &models.MinerStats{
 		MinerName:    friendlyMinerName,
 		CrawlerName:  crawlerId,
-		Status:       pkgConstants.MinerOK,
+		Status:       pkgConstants.MinerStatusOk,
 		MinerModel:   minerModel,
 		MinerVersion: minerVersion,
 		HashRateUnit: wrapper.GetString(rateUnitField),

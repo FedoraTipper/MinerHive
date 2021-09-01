@@ -9,7 +9,7 @@ import (
 )
 
 type ITransformer interface {
-	ConvertStatsPayloadToMiner(friendlyMinerName string, crawlerName string, data []byte) (*models.Miner, error)
+	ConvertStatsPayloadToMinerStats(friendlyMinerName string, crawlerName string, data []byte) (*models.MinerStats, error)
 }
 
 func GetTransformer(model constants.MinerSeries) (ITransformer, error) {

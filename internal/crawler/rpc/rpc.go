@@ -6,10 +6,10 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net"
 
 	"github.com/FedoraTipper/AntHive/internal/constants"
+	"go.uber.org/zap"
 )
 
 type IRPCCLient interface {
@@ -31,34 +31,47 @@ func GetRPCClient(model constants.MinerSeries) (IRPCCLient, error) {
 }
 
 func makeCall(addr string, request *Request) ([]byte, error) {
+	zap.S().Debugw("Dialling RPC over tcp", "addr", addr)
 	client, err := net.Dial("tcp", addr)
+
 	if err != nil {
-		log.Fatalf("Error in dialing. %s", err)
+		zap.S().Errorw("Unable to dial RPC API", "addr", addr, "Error", err)
+		return nil, err
 	}
 
 	defer func() {
 		err := client.Close()
 		if err != nil {
-			log.Fatalln(err)
+			zap.S().Errorw(fmt.Sprintf("Unable to close client connection to %s", addr), "Error", err)
 		}
 	}()
 
-	blob, err := json.Marshal(request)
+	jsonRequest, err := json.Marshal(request)
+
 	if err != nil {
+		zap.S().Errorw("Unable to marshal request to make RPC call", "request", request, "Error", err)
 		return nil, err
 	}
 
-	_, err = client.Write(blob)
+	zap.S().Debugw("Successfully marshaled RPC request to json", "JSON Request", jsonRequest)
+
+	_, err = client.Write(jsonRequest)
 
 	if err != nil {
+		zap.S().Errorw("Unable to write to RPC connection", "JSON Request", jsonRequest, "Error", err)
 		return nil, err
 	}
+
+	zap.S().Debug("Successfully wrote json data to RPC API")
 
 	b, err := ioutil.ReadAll(client)
 
 	if err != nil {
+		zap.S().Errorw("Unable to read response from RPC API", "Error", err)
 		return nil, err
 	}
+
+	zap.S().Debug("Successfully read RPC response")
 
 	b = bytes.Trim(b, "\x00")
 

@@ -6,7 +6,7 @@ import (
 	"github.com/FedoraTipper/AntHive/pkg/constants"
 )
 
-type Miner struct {
+type MinerStats struct {
 	MinerName    string
 	CrawlerName  string
 	MinerModel   string
@@ -36,11 +36,11 @@ type Hashboard struct {
 	ChipTemperature         []int
 }
 
-func (m *Miner) MarshalBinary() ([]byte, error) {
+func (m *MinerStats) MarshalBinary() ([]byte, error) {
 	return json.Marshal(m)
 }
 
-func (m *Miner) UnmarshalBinary(data []byte) error {
+func (m *MinerStats) UnmarshalBinary(data []byte) error {
 	if err := json.Unmarshal(data, &m); err != nil {
 		return err
 	}
