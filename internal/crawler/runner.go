@@ -72,7 +72,7 @@ func (cr *CrawlerRunner) collect(miner config.MinerConfig) {
 
 	zap.S().Infof("Starting new job for miner %s (%s)", miner.MinerName, miner.GetAddress())
 
-	defer cr.stashInterface(minerObj)
+	defer cr.stashInterface(&minerObj)
 
 	rpcClient, err := rpc.GetRPCClient(miner.Model)
 
@@ -108,7 +108,10 @@ func (cr *CrawlerRunner) collect(miner config.MinerConfig) {
 	zap.S().Debug("Successfully converted RPC stats model to MinerStats model", "Miner", miner.MinerName)
 }
 
-func (cr *CrawlerRunner) stashInterface(minerStats *models.MinerStats) {
+func (cr *CrawlerRunner) stashInterface(minerStatAddress **models.MinerStats) {
+	// dereference address to minerstats obj
+	minerStats := *minerStatAddress
+
 	expiration, err := time.ParseDuration(fmt.Sprintf("%ds", cr.CrawlerConfig.CrawlInterval))
 
 	if err != nil {
