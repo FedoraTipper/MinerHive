@@ -19,9 +19,8 @@ var (
 )
 
 var defaultConfigValues = map[string]interface{}{
-	"Port":           8080,
-	"LoggingEnabled": true,
-	"LoggingLevel":   "info",
+	"Port":         8080,
+	"LoggingLevel": "info",
 	"Redis": configModels.RedisConfig{
 		SelectedDatabase: 0,
 	},

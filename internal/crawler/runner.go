@@ -8,7 +8,7 @@ import (
 	"github.com/FedoraTipper/AntHive/internal/crawler/rpc"
 	"github.com/FedoraTipper/AntHive/internal/logger"
 	"github.com/FedoraTipper/AntHive/internal/models/config"
-	"github.com/FedoraTipper/AntHive/internal/stasher"
+	"github.com/FedoraTipper/AntHive/internal/redis"
 	"github.com/FedoraTipper/AntHive/internal/transformer"
 	"github.com/FedoraTipper/AntHive/pkg/constants"
 	"github.com/FedoraTipper/AntHive/pkg/models"
@@ -17,8 +17,8 @@ import (
 )
 
 type CrawlerRunner struct {
-	stasher       *stasher.Stasher
-	CrawlerConfig config.CrawlerConfig
+	wrappedRedisClient *redis.RedisClient
+	CrawlerConfig      config.CrawlerConfig
 }
 
 func (cr *CrawlerRunner) StartWork() {
@@ -26,10 +26,10 @@ func (cr *CrawlerRunner) StartWork() {
 
 	s := gocron.NewScheduler(time.UTC)
 
-	stash := &stasher.Stasher{}
+	newWrappedRedisClient := &redis.RedisClient{}
 	redisConfig := cr.CrawlerConfig.Redis
 
-	err := stash.NewRedisClient(redisConfig.Host, redisConfig.Port, redisConfig.Username, redisConfig.Password, redisConfig.SelectedDatabase)
+	err := newWrappedRedisClient.NewRedisClient(redisConfig.GetAddress(), redisConfig.Username, redisConfig.Password, redisConfig.SelectedDatabase)
 
 	if err != nil {
 		zap.S().Fatalw("Fatal error creating new Redis client", "Error", err)
@@ -37,7 +37,7 @@ func (cr *CrawlerRunner) StartWork() {
 
 	zap.S().Infof("Redis client established to %s:%d", redisConfig.Host, redisConfig.Port)
 
-	cr.stasher = stash
+	cr.wrappedRedisClient = newWrappedRedisClient
 
 	for _, miner := range cr.CrawlerConfig.Miners {
 		zap.S().Infof("Scheduling a job every %d seconds for %s", cr.CrawlerConfig.CrawlInterval, miner.MinerName)
@@ -70,7 +70,7 @@ func (cr *CrawlerRunner) collect(miner config.MinerConfig) {
 		Status:      constants.MinerStatusUnknown,
 	}
 
-	zap.S().Infof("Starting new job for miner %s (%s)", miner.MinerName, miner.GetURL())
+	zap.S().Infof("Starting new job for miner %s (%s)", miner.MinerName, miner.GetAddress())
 
 	defer cr.stashInterface(minerObj)
 
@@ -82,14 +82,14 @@ func (cr *CrawlerRunner) collect(miner config.MinerConfig) {
 	}
 	zap.S().Debugf("Successfully got RPC Client for %s", miner.Model)
 
-	zap.S().Infof("Making call to RPC to get stats from %s", miner.GetURL())
-	statsBytes, err := rpcClient.GetStats(miner.GetURL())
+	zap.S().Infof("Making call to RPC to get stats from %s", miner.GetAddress())
+	statsBytes, err := rpcClient.GetStats(miner.GetAddress())
 
 	if err != nil {
-		zap.S().Errorw("Error getting stats for miner", "Miner", miner.MinerName, "URL", miner.GetURL(), "Error", err)
+		zap.S().Errorw("Error getting stats for miner", "Miner", miner.MinerName, "URL", miner.GetAddress(), "Error", err)
 		return
 	}
-	zap.S().Infof("Successfully got stats from RPC API - %s", miner.GetURL())
+	zap.S().Infof("Successfully got stats from RPC API - %s", miner.GetAddress())
 
 	t, err := transformer.GetTransformer(miner.Model)
 
@@ -115,7 +115,7 @@ func (cr *CrawlerRunner) stashInterface(minerStats *models.MinerStats) {
 		zap.S().Fatalw("Unable to parse duration of Crawl Interval", "Error", err)
 	}
 
-	err = cr.stasher.StashInterface(minerStats, expiration*2)
+	err = cr.wrappedRedisClient.StashInterface(minerStats.MinerName, minerStats, expiration*2)
 
 	if err != nil {
 		zap.S().Errorw("Error inserting miner stats model into RedisDB", "Miner", minerStats.MinerName, "Error", err)

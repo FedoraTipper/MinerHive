@@ -1,6 +1,10 @@
 package config
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+	"net"
+)
 
 type RedisConfig struct {
 	Host             string
@@ -21,5 +25,18 @@ func (r *RedisConfig) Validate() []error {
 		errs = append(errs, errors.New("Value for Port is unassigned"))
 	}
 
+	if len(errs) == 0 {
+		conn, err := net.Dial("tcp", r.GetAddress())
+		if err != nil {
+			errs = append(errs, errors.New(fmt.Sprintf("Unable to dial RedisDB (%s)", r.GetAddress())))
+		} else {
+			conn.Close()
+		}
+	}
+
 	return errs
+}
+
+func (r *RedisConfig) GetAddress() string {
+	return fmt.Sprintf("%s:%d", r.Host, r.Port)
 }
