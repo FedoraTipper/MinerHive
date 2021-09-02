@@ -3,16 +3,16 @@ package main
 // Temp script to feed MinerStats to InfluxDB bucket
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"math"
 	"strconv"
 
 	"github.com/FedoraTipper/AntHive/pkg/models"
-	"github.com/go-redis/redis/v8"
+	"github.com/FedoraTipper/AntHive/pkg/redis"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/spf13/pflag"
+	"go.uber.org/zap"
 )
 
 // TODO: Move to own project when complete
@@ -36,20 +36,19 @@ func main() {
 		redisSelectedDatabaseInt = 0
 	}
 
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:     redisAddress,
-		Username: redisUsername,
-		Password: redisPassword,
-		DB:       redisSelectedDatabaseInt,
-	})
+	newWrappedRedisClient := &redis.RedisClient{}
 
-	err = redisTestConnection(redisClient)
+	err = newWrappedRedisClient.NewRedisClient(redisAddress, redisUsername, redisPassword, redisSelectedDatabaseInt)
+
+	if err != nil {
+		zap.S().Fatalw("Fatal error creating new Redis client", "Error", err)
+	}
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	minerJson, err := getInterface(minerName, redisClient)
+	minerJson, err := newWrappedRedisClient.GetInterface(minerName)
 
 	if err != nil {
 		log.Fatal(err)
@@ -113,24 +112,4 @@ func main() {
 
 	// Flush writes
 	writeAPI.Flush()
-}
-
-func redisTestConnection(client *redis.Client) error {
-	ctx := context.Background()
-
-	return client.Ping(ctx).Err()
-}
-
-func getInterface(key string, redisClient *redis.Client) (string, error) {
-	ctx := context.Background()
-
-	i, err := redisClient.Get(ctx, key).Result()
-
-	if err == redis.Nil {
-		err = nil
-	} else if err != nil {
-		return "", err
-	}
-
-	return i, nil
 }

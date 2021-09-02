@@ -8,10 +8,10 @@ import (
 	"github.com/FedoraTipper/AntHive/internal/crawler/rpc"
 	"github.com/FedoraTipper/AntHive/internal/logger"
 	"github.com/FedoraTipper/AntHive/internal/models/config"
-	"github.com/FedoraTipper/AntHive/internal/redis"
 	"github.com/FedoraTipper/AntHive/internal/transformer"
 	"github.com/FedoraTipper/AntHive/pkg/constants"
 	"github.com/FedoraTipper/AntHive/pkg/models"
+	"github.com/FedoraTipper/AntHive/pkg/redis"
 	"github.com/go-co-op/gocron"
 	"go.uber.org/zap"
 )
