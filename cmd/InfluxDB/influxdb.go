@@ -59,7 +59,7 @@ func main() {
 		log.Fatal("No miner information in redis store")
 	}
 
-	miner := models.Miner{}
+	miner := models.MinerStats{}
 
 	err = miner.UnmarshalBinary([]byte(minerJson))
 
