@@ -72,7 +72,7 @@ func (cr *CrawlerRunner) collect(miner config.MinerConfig) {
 
 	zap.S().Infof("Starting new job for miner %s (%s)", miner.MinerName, miner.GetAddress())
 
-	defer cr.stashInterface(&minerObj)
+	defer cr.stashMinerStats(&minerObj)
 
 	rpcClient, err := rpc.GetRPCClient(miner.Model)
 
@@ -108,9 +108,9 @@ func (cr *CrawlerRunner) collect(miner config.MinerConfig) {
 	zap.S().Debug("Successfully converted RPC stats model to MinerStats model", "Miner", miner.MinerName)
 }
 
-func (cr *CrawlerRunner) stashInterface(minerStatAddress **models.MinerStats) {
+func (cr *CrawlerRunner) stashMinerStats(minerStatPtrAddress **models.MinerStats) {
 	// dereference address to minerstats obj
-	minerStats := *minerStatAddress
+	minerStats := *minerStatPtrAddress
 
 	expiration, err := time.ParseDuration(fmt.Sprintf("%ds", cr.CrawlerConfig.CrawlInterval))
 
@@ -118,7 +118,10 @@ func (cr *CrawlerRunner) stashInterface(minerStatAddress **models.MinerStats) {
 		zap.S().Fatalw("Unable to parse duration of Crawl Interval", "Error", err)
 	}
 
-	err = cr.wrappedRedisClient.StashInterface(minerStats.MinerName, minerStats, expiration*2)
+	expiration *= 2
+
+	zap.S().Infow("Stashing MinerStats interface in RedisDB with expiration", "Key", minerStats.MinerName, "Expiration", expiration.String())
+	err = cr.wrappedRedisClient.StashInterface(minerStats.MinerName, minerStats, expiration)
 
 	if err != nil {
 		zap.S().Errorw("Error inserting miner stats model into RedisDB", "Miner", minerStats.MinerName, "Error", err)

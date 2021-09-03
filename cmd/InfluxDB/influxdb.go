@@ -10,9 +10,9 @@ import (
 
 	"github.com/FedoraTipper/AntHive/pkg/models"
 	"github.com/FedoraTipper/AntHive/pkg/redis"
+	redis2 "github.com/go-redis/redis/v8"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/spf13/pflag"
-	"go.uber.org/zap"
 )
 
 // TODO: Move to own project when complete
@@ -41,7 +41,7 @@ func main() {
 	err = newWrappedRedisClient.NewRedisClient(redisAddress, redisUsername, redisPassword, redisSelectedDatabaseInt)
 
 	if err != nil {
-		zap.S().Fatalw("Fatal error creating new Redis client", "Error", err)
+		log.Fatalf("Fatal error creating new Redis client.\nError: %v", err)
 	}
 
 	if err != nil {
@@ -50,7 +50,9 @@ func main() {
 
 	minerJson, err := newWrappedRedisClient.GetInterface(minerName)
 
-	if err != nil {
+	if err == redis2.Nil {
+		log.Fatalf("Miner %s is missing in RedisDB", minerName)
+	} else if err != nil {
 		log.Fatal(err)
 	}
 

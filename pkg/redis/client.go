@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"go.uber.org/zap"
 )
 
 type RedisClient struct {
@@ -32,46 +31,13 @@ func (s *RedisClient) redisTestConnection(client *redis.Client) error {
 }
 
 func (s *RedisClient) StashInterface(key string, i interface{}, expiration time.Duration) error {
-	ctx := context.Background()
-
-	zap.S().Infow("Stashing interface in RedisDB with expiration", "Key", key, "Expiration", expiration.String())
-	err := s.redisClient.Set(ctx, key, i, expiration).Err()
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return s.redisClient.Set(context.Background(), key, i, expiration).Err()
 }
 
 func (s *RedisClient) GetInterface(key string) (string, error) {
-	ctx := context.Background()
-
-	zap.S().Infof("Getting string interface with key (%s) from RedisDB", key)
-	i, err := s.redisClient.Get(ctx, key).Result()
-
-	if err == redis.Nil {
-		zap.S().Warnf("Key %s is missing from RedisDB", key)
-		err = nil
-	} else if err != nil {
-		return "", err
-	}
-
-	return i, nil
+	return s.redisClient.Get(context.Background(), key).Result()
 }
 
 func (s *RedisClient) GetKeys() ([]string, error) {
-	ctx := context.Background()
-
-	zap.S().Info("Getting all keys from RedisDB")
-	keys, err := s.redisClient.Keys(ctx, "*").Result()
-
-	if err == redis.Nil {
-		zap.S().Warn("No keys returned from RedisDB")
-		err = nil
-	} else if err != nil {
-		return nil, err
-	}
-
-	return keys, nil
+	return s.redisClient.Keys(context.Background(), "*").Result()
 }
