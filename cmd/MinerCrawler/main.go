@@ -12,8 +12,7 @@ var (
 	configName  = "config.yml"
 	configPaths = []string{
 		".",
-		"./configs/minercrawler/",
-		"./config/minercrawler/",
+		"$HOME/minercrawler/",
 		"$HOME/.config/minercrawler/",
 	}
 )

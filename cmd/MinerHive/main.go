@@ -12,8 +12,7 @@ var (
 	configName  = "config.yml"
 	configPaths = []string{
 		".",
-		"./configs/minerhive/",
-		"./config/minerhive/",
+		"$HOME/minerhive/",
 		"$HOME/.config/minerhive/",
 	}
 )
