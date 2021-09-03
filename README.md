@@ -3,6 +3,10 @@ Webcrawler API provider for ssh-locked Antminers
 
 # The Project
 
+### Quick glance:
+<img src="/docs/screenshots/high-level-overview.png" alt="High level overview" width="500" height="368"/>
+
+<img src="/docs/screenshots/grafana-example.png" alt="Grafana example" width="500" height="491"/>
 
 # Configuration
 All configuration files are to be structured as YAML files.
@@ -13,8 +17,7 @@ Otherwise, `config.yml` file will be searched for in these directories:
 
 ```
 ./
-./configs/<program-name>/
-./config/<program-name>/
+$HOME/<program>/
 $HOME/.config/<program-name>/
 
 e.g. ./config/minercrawler/config.yml
@@ -28,7 +31,15 @@ List of available logging levels:
 - error
 - fatal
 
-Developed against Antminer S19 (Firmware version: Mon Apr 19 16:36:50 CST 2021 / 49.0.1.3)
+# Miner compatibiltiy:
+Developed against Antminer S19 (Firmware version: Mon Apr 19 16:36:50 CST 2021 / 49.0.1.3). This should work for any miner that uses the CGMiner
+software implementation. If it doesn't work, create an issue - I'll help get it supported.
 
 # Why?
 I need stats and programmable functionality for a machine I own. 
+
+# Todo:
+- Testing
+- Control functionality (changing pools, restarting, setting fan speeds etc...)
+- DB change? (PSQL + GORM)
+- REST change? (GraphQL via GQLGen)
