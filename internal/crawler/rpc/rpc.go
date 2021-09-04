@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"net"
 
-	"github.com/FedoraTipper/AntHive/internal/constants"
+	"github.com/FedoraTipper/MinerHive/internal/constants"
 	"go.uber.org/zap"
 )
 

@@ -1,4 +1,4 @@
-module github.com/FedoraTipper/AntHive
+module github.com/FedoraTipper/MinerHive
 
 go 1.16
 

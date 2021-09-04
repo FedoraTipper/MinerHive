@@ -1,12 +1,12 @@
-# AntHive
-Webcrawler API provider for ssh-locked Antminers
+# MinerHive
+Standardised set of tools to help monitor and maintain CGMiner based ASICs at a glance.
 
 # The Project
 
 ### Quick glance:
-<img src="/docs/screenshots/high-level-overview.png" alt="High level overview" width="500" height="368"/>
+<img src="/docs/screenshots/high-level-overview.png" alt="High level overview" width="700" height="516"/>
 
-<img src="/docs/screenshots/grafana-example.png" alt="Grafana example" width="500" height="491"/>
+<img src="/docs/screenshots/grafana-example.png" alt="Grafana example" width="700" height="688"/>
 
 # Configuration
 All configuration files are to be structured as YAML files.

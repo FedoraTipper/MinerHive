@@ -8,8 +8,8 @@ import (
 	"math"
 	"strconv"
 
-	"github.com/FedoraTipper/AntHive/pkg/models"
-	"github.com/FedoraTipper/AntHive/pkg/redis"
+	"github.com/FedoraTipper/MinerHive/pkg/models"
+	"github.com/FedoraTipper/MinerHive/pkg/redis"
 	redis2 "github.com/go-redis/redis/v8"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/spf13/pflag"
@@ -27,7 +27,7 @@ func main() {
 	pflag.StringVar(&redisAddress, "raddress", "", "Host and port to Redis DB. E.g. redis.example.com:6379")
 	pflag.StringVar(&redisUsername, "rusername", "", "Username for RedisDB. Don't add flag if none is set")
 	pflag.StringVar(&redisPassword, "rpassword", "", "Password for RedisDB. Don't add flag if none is set")
-	pflag.StringVar(&redisSelectedDatabase, "rselecteddatabase", "0", "Redis selected DB. Don't add flag if none is set (Default: 1)")
+	pflag.StringVar(&redisSelectedDatabase, "rselecteddatabase", "0", "Redis selected DB. Don't add flag if none is set (Default: 0)")
 	pflag.Parse()
 
 	redisSelectedDatabaseInt, err := strconv.Atoi(redisSelectedDatabase)

@@ -8,7 +8,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/FedoraTipper/AntHive/internal/constants"
+	"github.com/FedoraTipper/MinerHive/internal/constants"
 )
 
 const (

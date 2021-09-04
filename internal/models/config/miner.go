@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/FedoraTipper/AntHive/internal/constants"
+	"github.com/FedoraTipper/MinerHive/internal/constants"
 )
 
 type MinerConfig struct {

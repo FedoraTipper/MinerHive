@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/FedoraTipper/AntHive/internal/config"
-	hiveModule "github.com/FedoraTipper/AntHive/internal/hive"
-	configModels "github.com/FedoraTipper/AntHive/internal/models/config"
+	"github.com/FedoraTipper/MinerHive/internal/config"
+	hiveModule "github.com/FedoraTipper/MinerHive/internal/hive"
+	configModels "github.com/FedoraTipper/MinerHive/internal/models/config"
 )
 
 var (
