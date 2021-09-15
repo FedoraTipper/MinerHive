@@ -8,6 +8,14 @@ Standardised set of tools to help monitor and maintain CGMiner based ASICs at a 
 
 <img src="/docs/screenshots/grafana-example.png" alt="Grafana example" width="700" height="688"/>
 
+# Setup
+### Requirements
+- Redis DB (Please be responsible by locking things down and securing it).
+- Go 1.16 to run or build binaries against
+
+### Building
+- TODO
+
 # Configuration
 All configuration files are to be structured as YAML files.
 

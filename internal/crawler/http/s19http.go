@@ -7,10 +7,10 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/FedoraTipper/AntHive/internal/constants"
-	"github.com/FedoraTipper/AntHive/internal/crawler/authentication"
-	"github.com/FedoraTipper/AntHive/pkg/hash"
-	"github.com/FedoraTipper/AntHive/pkg/hex"
+	"github.com/FedoraTipper/MinerHive/internal/constants"
+	"github.com/FedoraTipper/MinerHive/internal/crawler/authentication"
+	"github.com/FedoraTipper/MinerHive/pkg/hash"
+	"github.com/FedoraTipper/MinerHive/pkg/hex"
 )
 
 type S19HTTPClient struct{}

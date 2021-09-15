@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/FedoraTipper/AntHive/internal/constants"
-	"github.com/FedoraTipper/AntHive/pkg/hash"
+	"github.com/FedoraTipper/MinerHive/internal/constants"
+	"github.com/FedoraTipper/MinerHive/pkg/hash"
 )
 
 const (
