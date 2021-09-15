@@ -3,7 +3,7 @@ package models
 import (
 	"encoding/json"
 
-	"github.com/FedoraTipper/AntHive/pkg/constants"
+	"github.com/FedoraTipper/MinerHive/pkg/constants"
 )
 
 type MinerStats struct {
